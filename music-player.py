@@ -171,6 +171,110 @@ def draw_playlists_maker(musics, y, filename):
         for i in playlist:
             f.write(i + "\n")
 
+def draw_edit(playlist, musics):
+    songs = []
+    with open('playlist/{}'.format(playlist), 'r') as f:
+        songs = f.readlines()
+    for i in  range(len(songs)):
+        songs[i] = songs[i][:-1]
+    stdscr.refresh()
+    key = ""
+    y = 0
+    while key != "\n":
+        stdscr.clear()
+        draw_menu(y)
+        for i in range(len(songs)):
+            if y == i:
+                stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(songs[i]), red)
+            else:
+                stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(songs[i]))
+        key = stdscr.getkey()
+        if key == "j":
+            if y < len(songs) - 1:
+                y = y + 1
+        if key == "k":
+            if y > 0:
+                y = y - 1
+        if key == "l":
+            song = songs[y]
+            stdscr.clear()
+            draw_menu(y)
+            stdscr.addstr(int(Y/12) + 2*y, int(2*X/3), str(song))
+            for i in range(len(songs) - (y + 1)):
+                songs[y + i] = songs[y + i + 1]
+            songs.pop(len(songs) - 1)
+            for i in range(len(songs)):
+                stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(songs[i]))
+            while True:
+                key = stdscr.getkey()
+                stdscr.clear()
+                draw_menu(y)
+                if key == "j":
+                    if y < len(songs):
+                        y = y + 1
+                if key == "k":
+                    if y > 0:
+                        y = y - 1
+                if key == "h":
+                    songs.append(songs[len(songs) - 1])
+                    for i in range(len(songs) - (y+1)):
+                        songs[len(songs) - (i+1)] = songs[len(songs) - (i+2)]
+                    songs[y] = song
+                    key = ""
+                    break
+                stdscr.addstr(int(Y/12) + 2*y, int(2*X/3), str(song))
+                for i in range(len(songs)):
+                    stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(songs[i]))
+        if key == "+":
+            y = 0
+            stdscr.clear()
+            draw_menu(y)
+            for i in range(len(musics)):
+                if y == i:
+                    stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(musics[i]), red)
+                else:
+                    stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(musics[i]))
+            while key != "\n":
+                key = stdscr.getkey()
+                if key == "j":
+                    if y < len(musics):
+                        y = y + 1
+                if key == "k":
+                    if y > 0:
+                        y = y - 1
+                if key == "h":
+                    y = 0
+                    stdscr.clear()
+                    draw_menu(y)
+                    break
+                for i in range(len(musics)):
+                    if y == i:
+                        stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(musics[i]), red)
+                    else:
+                        stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(musics[i]))
+                stdscr.refresh()
+            songs.append(musics[y])
+            key = ""
+            y = 0
+
+        if key == "d":
+            for i in range(len(songs) - (y + 1)):
+                songs[y + i] = songs[y + i + 1]
+            songs.pop(len(songs) - 1)
+        if key == "h":
+            stdscr.clear()
+            draw_menu(y)
+            y = 0
+            draw_playlist(musics, playlists, y)
+            stdscr.refresh()
+            break
+        if key == "q":
+            quit()
+        stdscr.refresh()
+    with open('playlist/{}'.format(playlist), 'w') as f:
+        for i in songs:
+            f.write(i + "\n")
+
 def search(query):
     stdscr.clear()
     stdscr.refresh()
@@ -262,7 +366,14 @@ while True:
                 playlists = os.listdir("./playlist")
                 draw_menu(y)
                 stdscr.refresh()
-
+            if key == "e":
+                stdscr.clear()
+                draw_menu(y)
+                draw_edit(playlists[y], musics)
+                stdscr.clear()
+                draw_menu(y)
+                draw_playlist(musics, playlists, y)
+                stdscr.refresh()
             if key == "d":
                 os.remove("playlist/{}".format(playlists[y]))
                 y = 0
