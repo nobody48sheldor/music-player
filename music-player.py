@@ -67,13 +67,16 @@ def draw_menu(y):
 
 def draw_music(musics, y, d):
     Y, X = stdscr.getmaxyx()
-    for i in range(len(musics)):
-        if i < (int(Y/2) - 1):
-            if y <= 1:
+    ymax = int(Y/2 - 1)
+    for i in range(ymax - 1):
+        if i <= len(musics) - 1:
+            if y <= 2:
                 if d >= 1:
                     d = d - 1
-            if y >= (int(Y/2) - 1):
+                    y =  y + 1
+            if y >= ymax - 1:
                 d = d + 1
+                y =  y - 1
             if i == y:
                 stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(musics[i+d]), red)
             else:
@@ -119,15 +122,17 @@ def draw_filename():
 def draw_playlist(musics, playlists, y):
     Y, X = stdscr.getmaxyx()
     for i in range(len(playlists)):
-        if i == y:
-            stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(playlists[i]), red)
-        else:
-            stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(playlists[i]))
+        if i < int(Y/2 - 1):
+            if i == y:
+                stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(playlists[i]), red)
+            else:
+                stdscr.addstr(int(Y/12) + 2*i, int(X/3), str(playlists[i]))
     with open("playlist/{}".format(playlists[y], "r")) as f:
         songs = f.readlines()
         for i in range(len(songs)):
-            songs[i] = songs[i][:-1]
-            stdscr.addstr(int(Y/12) + 2*i, int(X/2), str(songs[i]))
+            if i < int(Y/2 - 1):
+                songs[i] = songs[i][:-1]
+                stdscr.addstr(int(Y/12) + 2*i, int(X/2), str(songs[i]))
 
 
 def draw_playlists_maker(musics, y, filename):
@@ -323,10 +328,13 @@ while True:
 
     if x == 1:
         if menu == 0:
+            stdscr.clear()
+            draw_menu(0)
             draw_music(musics, y, d)
             if key == "h":
                 x = 0
                 y = 0
+                d = 0
                 stdscr.clear()
                 draw_menu(y)
             if key == "l":
