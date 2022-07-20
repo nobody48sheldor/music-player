@@ -69,12 +69,12 @@ def draw_music(musics, y, d):
     Y, X = stdscr.getmaxyx()
     ymax = int(Y/2 - 1)
     for i in range(ymax - 1):
-        if i <= len(musics) - 1:
-            if y <= 2:
+        if i < len(musics) - d:
+            if y <= 1:
                 if d >= 1:
                     d = d - 1
                     y =  y + 1
-            if y >= ymax - 1:
+            if y >= ymax - 2:
                 d = d + 1
                 y =  y - 1
             if i == y:
@@ -242,7 +242,7 @@ def draw_edit(playlist, musics):
             while key != "\n":
                 key = stdscr.getkey()
                 if key == "j":
-                    if y < len(musics):
+                    if y < len(musics) - 1:
                         y = y + 1
                 if key == "k":
                     if y > 0:
